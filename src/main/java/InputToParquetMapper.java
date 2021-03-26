@@ -25,46 +25,15 @@ import java.util.HashMap;
 // TODO: Get URIs from MAIN
 // TODO: Read ratings compressed
 // TODO: Shorter float than 32bit to avgRatings [PARQUET]
-// TODO: Remove main method
+// TODO: investigate DECIMAL to avgRating [PARQUET]
 
 
 public class InputToParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {
     private Schema schema;
     HashMap<String, Rating> ratings = new HashMap<>();
 
-    // For testing purposes
-    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        FileSystem fs = FileSystem.get(new Configuration());
-        fs.delete(new Path("parquet_output"), true);
-
-        Job job =  Job.getInstance(new Configuration(), "toParquet");
-        job.setJarByClass(InputToParquetMapper.class);
-        job.setMapperClass(InputToParquetMapper.class);
-        job.setNumReduceTasks(0);
-        job.setOutputKeyClass(Void.class);
-        job.setOutputValueClass(GenericRecord.class);
-        job.setInputFormatClass(TextInputFormat.class);
-        FileInputFormat.addInputPath(job, new Path("src/main/resources/title.basics.mini.tsv.bz2"));
-        FileOutputFormat.setOutputPath(job, new Path("parquet_output"));
-
-        job.waitForCompletion(true);
-    }
-
-    private String readFile(String filePath) throws IOException {
-        InputStream is = new FileInputStream(filePath);
-        String data = new String(is.readAllBytes());
-        is.close();
-
-        return data;
-    }
-
-    private Schema getSchema() throws IOException {
-        MessageType mt = MessageTypeParser.parseMessageType(readFile("src/main/schemas/basicsRatings.parquet"));
-        return new AvroSchemaConverter().convert(mt);
-    }
-
     private void populateRatings() throws IOException {
-        String ratingsData = readFile("src/main/resources/title.ratings.full.tsv");
+        String ratingsData = Helper.readFile("src/main/resources/title.ratings.full.tsv");
         boolean headerGone = false;
 
         // Get rows
@@ -91,7 +60,7 @@ public class InputToParquetMapper extends Mapper<LongWritable, Text, Void, Gener
 
     @Override
     protected void setup(Context context) throws IOException {
-        schema = getSchema();
+        schema = Helper.getSchema("src/main/schemas/basicsRatings.parquet");
         populateRatings();
     }
 
