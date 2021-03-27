@@ -16,12 +16,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class Helper {
     public static String readFile(String filePath) throws IOException {
         InputStream is = new FileInputStream(filePath);
+
         String data = new String(is.readAllBytes());
         is.close();
 
@@ -55,5 +55,17 @@ public class Helper {
         }
 
         return gr;
+    }
+
+    public static Schema getSchemaFromUnion(String fieldName, Schema union) {
+        List<Schema> schemas = union.getTypes();
+
+        for (Schema schema: schemas) {
+            if (schema != null && schema.getName().equals(fieldName)) {
+                return schema;
+            }
+        }
+
+        return null;
     }
 }

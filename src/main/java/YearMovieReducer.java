@@ -11,18 +11,15 @@ import java.util.*;
 public class YearMovieReducer extends Reducer<IntWritable, Text, Void, GenericRecord> {
     private Schema inputSchema;
     private Schema outputSchema;
-    private Schema mostVotesMovieSchema;
-    private Schema topRankedMovie;
+    private Schema mostVotedMovieSchema;
+    private Schema movieRatingInfo;
 
     @Override
     protected void setup(Context context) throws IOException {
         inputSchema = Helper.getSchema("src/main/schemas/yearMovieReducerInput.parquet");
         outputSchema = Helper.getSchema("src/main/schemas/yearMovie.parquet");
-
-        // The following fields are optional, which results in a UNION of the field schema with "null"
-        // So, to get the schema, get all types and ignore the null value
-        mostVotesMovieSchema = outputSchema.getField("mostVotedMovie").schema().getTypes().get(1);
-        topRankedMovie = outputSchema.getField("top10RatedMovies").schema().getValueType().getTypes().get(1);
+        mostVotedMovieSchema = Helper.getSchemaFromUnion("mostVotedMovie", outputSchema.getField("mostVotedMovie").schema());
+        movieRatingInfo =  Helper.getSchemaFromUnion("movieRatingInfo", outputSchema.getField("top10RatedMovies").schema().getValueType());
     }
 
     @Override
@@ -46,7 +43,7 @@ public class YearMovieReducer extends Reducer<IntWritable, Text, Void, GenericRe
 
         // Verify if is valid
         if (mostVotes != null && mostVotes.get("numVotes") != null) {
-            GenericRecord mostVotesMovie = new GenericData.Record(mostVotesMovieSchema);
+            GenericRecord mostVotesMovie = new GenericData.Record(mostVotedMovieSchema);
             mostVotesMovie.put("ttconst", mostVotes.get("ttconst"));
             mostVotesMovie.put("primaryTitle", mostVotes.get("primaryTitle"));
             mostVotesMovie.put("numVotes", mostVotes.get("numVotes"));
@@ -65,7 +62,7 @@ public class YearMovieReducer extends Reducer<IntWritable, Text, Void, GenericRe
 
         for (int i=0; i<10; i++) {
             if (i < valuesList.size() && valuesList.get(i).get("avgRating") != null) {
-                GenericRecord movieRatingInfo = new GenericData.Record(topRankedMovie);
+                GenericRecord movieRatingInfo = new GenericData.Record(this.movieRatingInfo);
                 GenericRecord movieInRankI = valuesList.get(i);
 
                 movieRatingInfo.put("ttconst", movieInRankI.get("ttconst"));
