@@ -11,10 +11,9 @@ import org.apache.parquet.avro.AvroParquetOutputFormat;
 import java.io.IOException;
 
 public class InputToParquetMapperTest {
-
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         FileSystem fs = FileSystem.get(new Configuration());
-        fs.delete(new Path("inputToParquetJobOutput"), true);
+        fs.delete(new Path("inputToParquetOutput"), true);
 
         Job job =  Job.getInstance(new Configuration(), "inputToParquetJob");
         job.setJarByClass(InputToParquetMapper.class);
@@ -30,7 +29,7 @@ public class InputToParquetMapperTest {
 
         AvroParquetOutputFormat.setSchema(job, Helper.getSchema("src/main/schemas/basicsRatings.parquet"));
         FileInputFormat.addInputPath(job, new Path("src/main/resources/title.basics.mini.tsv.bz2"));
-        FileOutputFormat.setOutputPath(job, new Path("inputToParquetJobOutput"));
+        FileOutputFormat.setOutputPath(job, new Path("inputToParquetOutput"));
 
         job.waitForCompletion(true);
     }

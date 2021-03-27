@@ -1,12 +1,17 @@
 import org.apache.avro.Schema;
+import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.DatumWriter;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class YearMovieMapper extends Mapper<Void, GenericRecord, IntWritable, GenericRecord> {
+public class YearMovieMapper extends Mapper<Void, GenericRecord, IntWritable, Text> {
     private static final String TYPE_MOVIE = "movie";
     private Schema outputSchema;
 
@@ -28,7 +33,7 @@ public class YearMovieMapper extends Mapper<Void, GenericRecord, IntWritable, Ge
             record.put("avgRating", value.get("avgRating"));
             record.put("numVotes", value.get("numVotes"));
 
-            context.write(new IntWritable((int) value.get("startYear")), record);
+            context.write(new IntWritable((int) value.get("startYear")), new Text(Helper.serializeRecord(outputSchema, record)));
         }
     }
 }

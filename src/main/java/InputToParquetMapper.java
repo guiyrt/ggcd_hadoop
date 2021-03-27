@@ -72,12 +72,12 @@ public class InputToParquetMapper extends Mapper<LongWritable, Text, Void, Gener
 
             String[] values = value.toString().split("\t");
 
-            record.put("tconst", values[0]);
+            record.put("ttconst", values[0]);
             record.put("titleType", values[1]);
             record.put("primaryTitle", values[2]);
             record.put("originalTitle", values[3]);
             record.put("isAdult", Integer.parseInt(values[4]) == 1);
-            record.put("startYear", values[6].equals("\\N") ? null : Integer.parseInt(values[5]));
+            record.put("startYear", values[5].equals("\\N") ? null : Integer.parseInt(values[5]));
             record.put("endYear", values[6].equals("\\N") ? null : Integer.parseInt(values[6]));
             record.put("runtimeMinutes", values[7].equals("\\N") ? null : Integer.parseInt(values[7]));
             record.put("genres", values[8].equals("\\N") ? null : Arrays.asList(values[8].split(",")));

@@ -1,16 +1,19 @@
 message yearMovie {
     required int32 startYear (UINT_16);
     required int32 totalMovies (UINT_32);
-    required group mostVotedMovie {
-        required boolean ttconst (STRING);
-        required boolean primaryTitle (STRING);
+    optional group mostVotedMovie {
+        required binary ttconst (STRING);
+        required binary primaryTitle (STRING);
         required int32 numVotes (UINT_32);
     }
-    required group top10RatedMovies (LIST) {
-        optional group movie {
-            required boolean ttconst (STRING);
-            required boolean primaryTitle (STRING);
-            required int32 avgRating (UINT_16);
+    required group top10RatedMovies (MAP) {
+        repeated group topRankedMovie {
+            required binary rank (UTF8);
+            optional group movieRatingInfo {
+                required binary ttconst (STRING);
+                required binary primaryTitle (STRING);
+                required float avgRating;
+            }
         }
     }
 }
