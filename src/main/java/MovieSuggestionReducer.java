@@ -1,5 +1,6 @@
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -7,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieSuggestionReducer extends Reducer<GenreRatingPair, Text, Void, Text> {
+public class MovieSuggestionReducer extends Reducer<GenreRatingPair, BytesWritable, Void, Text> {
     private Schema inputSchema;
     private static final String headers = "ttconst\tprimaryTitle\tmainGenre\tsuggestedTtconst\tsuggestedPrimaryTitle\tsuggestedAvgRating";
 
@@ -39,10 +40,10 @@ public class MovieSuggestionReducer extends Reducer<GenreRatingPair, Text, Void,
     }
 
     @Override
-    protected void reduce(GenreRatingPair key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(GenreRatingPair key, Iterable<BytesWritable> values, Context context) throws IOException, InterruptedException {
         // Pass iterable to list
         List<GenericRecord> valuesList = new ArrayList<>();
-        for (Text data : values) {
+        for (BytesWritable data : values) {
             valuesList.add(Helper.deserializeRecord(inputSchema, data));
         }
 

@@ -1,6 +1,7 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -13,13 +14,13 @@ public class MovieSuggestionJobTest {
         FileSystem fs = FileSystem.get(new Configuration());
         fs.delete(new Path("movieSuggestionJobOutput"), true);
 
-        Job job =  Job.getInstance(new Configuration(), "movieSuggestionOutput");
+        Job job = Job.getInstance(new Configuration(), "movieSuggestionOutput");
         job.setJarByClass(MovieSuggestionJobTest.class);
         job.setMapperClass(MovieSuggestionMapper.class);
         job.setReducerClass(MovieSuggestionReducer.class);
 
         job.setMapOutputKeyClass(GenreRatingPair.class);
-        job.setMapOutputValueClass(Text.class);
+        job.setMapOutputValueClass(BytesWritable.class);
         job.setInputFormatClass(AvroParquetInputFormat.class);
 
         job.setPartitionerClass(GenreRatingPartitioner.class);

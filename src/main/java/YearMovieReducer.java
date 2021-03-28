@@ -1,14 +1,14 @@
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 import java.util.*;
 
-public class YearMovieReducer extends Reducer<IntWritable, Text, Void, GenericRecord> {
+public class YearMovieReducer extends Reducer<IntWritable, BytesWritable, Void, GenericRecord> {
     private Schema inputSchema;
     private Schema outputSchema;
     private Schema mostVotedMovieSchema;
@@ -23,12 +23,12 @@ public class YearMovieReducer extends Reducer<IntWritable, Text, Void, GenericRe
     }
 
     @Override
-    protected void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(IntWritable key, Iterable<BytesWritable> values, Context context) throws IOException, InterruptedException {
         GenericRecord record = new GenericData.Record(outputSchema);
 
         // Pass iterable to list
         List<GenericRecord> valuesList = new ArrayList<>();
-        for (Text data : values) {
+        for (BytesWritable data : values) {
             valuesList.add(Helper.deserializeRecord(inputSchema, data));
         }
 

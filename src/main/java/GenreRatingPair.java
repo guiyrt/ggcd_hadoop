@@ -8,8 +8,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public class GenreRatingPair implements Writable, WritableComparable<GenreRatingPair> {
-    private Text genre;
-    private FloatWritable rating;
+    private final Text genre;
+    private final FloatWritable rating;
 
     public  GenreRatingPair() {
         genre = new Text();

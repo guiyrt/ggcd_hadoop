@@ -7,6 +7,7 @@ import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DatumWriter;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.parquet.avro.AvroSchemaConverter;
 import org.apache.parquet.schema.MessageType;
@@ -45,7 +46,7 @@ public class Helper {
         return byteArray.toByteArray();
     }
 
-    public static GenericRecord deserializeRecord(Schema schema, Text data) throws IOException {
+    public static GenericRecord deserializeRecord(Schema schema, BytesWritable data) throws IOException {
         DatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
         DataFileReader<GenericRecord> dataFileReader = new DataFileReader<>(new SeekableByteArrayInput(data.getBytes()), datumReader);
 

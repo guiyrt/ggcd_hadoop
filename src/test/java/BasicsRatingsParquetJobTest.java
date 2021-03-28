@@ -10,13 +10,13 @@ import org.apache.parquet.avro.AvroParquetOutputFormat;
 
 import java.io.IOException;
 
-public class BasicsRatingsParquetMapperJobTest {
+public class BasicsRatingsParquetJobTest {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         FileSystem fs = FileSystem.get(new Configuration());
         fs.delete(new Path("basicsRatingsParquetJobOutput"), true);
 
         Job job =  Job.getInstance(new Configuration(), "basicsRatingsParquetJob");
-        job.setJarByClass(basicsRatingsParquetMapper.class);
+        job.setJarByClass(BasicsRatingsParquetJobTest.class);
         job.setMapperClass(basicsRatingsParquetMapper.class);
 
         job.setNumReduceTasks(0);

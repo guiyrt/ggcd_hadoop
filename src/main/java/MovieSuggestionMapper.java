@@ -1,13 +1,13 @@
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 import java.util.List;
 
-public class MovieSuggestionMapper extends Mapper<Void, GenericRecord, GenreRatingPair, Text> {
+public class MovieSuggestionMapper extends Mapper<Void, GenericRecord, GenreRatingPair, BytesWritable> {
     private static final String TYPE_MOVIE = "movie";
     private Schema outputSchema;
 
@@ -30,7 +30,7 @@ public class MovieSuggestionMapper extends Mapper<Void, GenericRecord, GenreRati
             String mainGenre = value.get("genres") == null ? "None" : ((List<String>) value.get("genres")).get(0);
             float rating = value.get("avgRating") == null ? 0 : (float) value.get("avgRating");
 
-            context.write(new GenreRatingPair(mainGenre, rating), new Text(Helper.serializeRecord(outputSchema, record)));
+            context.write(new GenreRatingPair(mainGenre, rating), new BytesWritable(Helper.serializeRecord(outputSchema, record)));
         }
     }
 }
