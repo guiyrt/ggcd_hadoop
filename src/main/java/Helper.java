@@ -58,9 +58,12 @@ public class Helper {
     }
 
     public static Schema getSchemaFromUnion(String fieldName, Schema union) {
-        List<Schema> schemas = union.getTypes();
+        // Input schema must have type UNION
+        if (!union.getType().equals(Schema.Type.UNION)) {
+            return null;
+        }
 
-        for (Schema schema: schemas) {
+        for (Schema schema: union.getTypes()) {
             if (schema != null && schema.getName().equals(fieldName)) {
                 return schema;
             }

@@ -1,23 +1,11 @@
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.parquet.avro.AvroSchemaConverter;
-import org.apache.parquet.schema.MessageType;
-import org.apache.parquet.schema.MessageTypeParser;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -28,7 +16,7 @@ import java.util.HashMap;
 // TODO: investigate DECIMAL to avgRating [PARQUET]
 
 
-public class InputToParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {
+public class basicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {
     private Schema schema;
     HashMap<String, Rating> ratings = new HashMap<>();
 
