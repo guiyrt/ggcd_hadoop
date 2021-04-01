@@ -1,3 +1,5 @@
+package Common;
+
 public class Rating {
     private final double avgRating;
     private final int numVotes;

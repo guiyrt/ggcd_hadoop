@@ -1,3 +1,7 @@
+package Mappers;
+
+import Common.Helper;
+import Common.Rating;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -12,11 +16,9 @@ import java.util.HashMap;
 
 // TODO: Get URIs from MAIN
 // TODO: Read ratings compressed
-// TODO: Shorter float than 32bit to avgRatings [PARQUET]
-// TODO: investigate DECIMAL to avgRating [PARQUET]
 
 
-public class basicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {
+public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {
     private Schema schema;
     HashMap<String, Rating> ratings = new HashMap<>();
 

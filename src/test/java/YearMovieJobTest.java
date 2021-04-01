@@ -1,10 +1,13 @@
-import org.apache.avro.generic.GenericRecord;
+import Common.Helper;
+import Mappers.YearMovieMapper;
+import Reducers.YearMovieReducer;
+import WritableComparable.YearRatingPair;
+import Writables.YearMovieData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.parquet.avro.AvroParquetInputFormat;
@@ -22,8 +25,8 @@ public class YearMovieJobTest {
         job.setMapperClass(YearMovieMapper.class);
         job.setReducerClass(YearMovieReducer.class);
 
-        job.setMapOutputKeyClass(IntWritable.class);
-        job.setMapOutputValueClass(BytesWritable.class);
+        job.setMapOutputKeyClass(YearRatingPair.class);
+        job.setMapOutputValueClass(YearMovieData.class);
 
         job.setInputFormatClass(AvroParquetInputFormat.class);
         job.setOutputFormatClass(AvroParquetOutputFormat.class);

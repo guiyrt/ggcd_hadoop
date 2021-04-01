@@ -1,3 +1,6 @@
+package Partitioners;
+
+import WritableComparable.GenreRatingPair;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Partitioner;
 

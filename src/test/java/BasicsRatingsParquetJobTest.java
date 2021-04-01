@@ -1,3 +1,5 @@
+import Common.Helper;
+import Mappers.BasicsRatingsParquetMapper;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -17,7 +19,7 @@ public class BasicsRatingsParquetJobTest {
 
         Job job =  Job.getInstance(new Configuration(), "basicsRatingsParquetJob");
         job.setJarByClass(BasicsRatingsParquetJobTest.class);
-        job.setMapperClass(basicsRatingsParquetMapper.class);
+        job.setMapperClass(BasicsRatingsParquetMapper.class);
 
         job.setNumReduceTasks(0);
 

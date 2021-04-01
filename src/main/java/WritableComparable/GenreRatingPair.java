@@ -1,3 +1,5 @@
+package WritableComparable;
+
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
@@ -21,20 +23,13 @@ public class GenreRatingPair implements Writable, WritableComparable<GenreRating
         this.rating = new FloatWritable(rating);
     }
 
-    public Text getGenre() {
-        return genre;
-    }
-
-    public FloatWritable getRating() {
-        return rating;
-    }
-
     @Override
     public int compareTo(GenreRatingPair grp) {
         int compareGRP = genre.compareTo(grp.getGenre());
 
         if (compareGRP == 0) {
-            compareGRP = rating.compareTo(grp.getRating());
+            // Multiply by -1 to get reverse order
+            compareGRP = rating.compareTo(grp.getRating()) * -1;
         }
 
         return compareGRP;
@@ -50,5 +45,13 @@ public class GenreRatingPair implements Writable, WritableComparable<GenreRating
     public void readFields(DataInput dataInput) throws IOException {
         genre.readFields(dataInput);
         rating.readFields(dataInput);
+    }
+
+    public Text getGenre() {
+        return genre;
+    }
+
+    public FloatWritable getRating() {
+        return rating;
     }
 }

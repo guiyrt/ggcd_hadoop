@@ -1,6 +1,0 @@
-message yearMovieReducerInput {
-    required binary ttconst (STRING);
-    required binary primaryTitle (STRING);
-    optional float avgRating;
-    optional int32 numVotes (UINT_32);
-}

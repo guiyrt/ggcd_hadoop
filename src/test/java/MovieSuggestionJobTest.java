@@ -1,8 +1,14 @@
+import Common.Helper;
+import GroupringComparators.GenreRatingGroupingComparator;
+import Mappers.MovieSuggestionMapper;
+import Partitioners.GenreRatingPartitioner;
+import Reducers.MovieSuggestionReducer;
+import WritableComparable.GenreRatingPair;
+import Writables.MovieSuggestionData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.parquet.avro.AvroParquetInputFormat;
@@ -20,7 +26,7 @@ public class MovieSuggestionJobTest {
         job.setReducerClass(MovieSuggestionReducer.class);
 
         job.setMapOutputKeyClass(GenreRatingPair.class);
-        job.setMapOutputValueClass(BytesWritable.class);
+        job.setMapOutputValueClass(MovieSuggestionData.class);
         job.setInputFormatClass(AvroParquetInputFormat.class);
 
         job.setPartitionerClass(GenreRatingPartitioner.class);
