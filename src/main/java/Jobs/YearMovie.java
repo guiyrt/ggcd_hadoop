@@ -18,7 +18,7 @@ import java.io.IOException;
 public class YearMovie {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         FileSystem fs = FileSystem.get(new Configuration());
-        fs.delete(new Path("yearMovieJobOutput"), true);
+        fs.delete(new Path(args[1]), true);
 
         Job job =  Job.getInstance(new Configuration(), "yearMovieJob");
         job.setJarByClass(YearMovie.class);

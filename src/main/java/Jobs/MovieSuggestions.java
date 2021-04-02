@@ -19,7 +19,7 @@ import java.io.IOException;
 public class MovieSuggestions {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         FileSystem fs = FileSystem.get(new Configuration());
-        fs.delete(new Path("movieSuggestionJobOutput"), true);
+        fs.delete(new Path(args[1]), true);
 
         Job job = Job.getInstance(new Configuration(), "movieSuggestionOutput");
         job.setJarByClass(MovieSuggestions.class);
