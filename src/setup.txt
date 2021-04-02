@@ -1,3 +1,11 @@
 # Schemas to hdfs
 ./cluster.sh "hdfs_upload" ../schemas /schemas
 
+# Job BasicsRatingsParquet
+./cluster.sh "submit" ../../target/ggcd_hadoop-1.0.jar Jobs.BasicsRatingsParquet gs://ggcd-data/title.basics.mini.tsv.bz2 hdfs:///title.ratings.full.tsv hdfs:///basicsRatingsOutput/
+
+# Job YearMovie
+./cluster.sh "submit" ../../target/ggcd_hadoop-1.0.jar Jobs.YearMovie hdfs:///basicsRatingsOutput/ hdfs:///yearMovieOutput/
+
+# Job MovieSuggestions
+./cluster.sh "submit" ../../target/ggcd_hadoop-1.0.jar Jobs.MovieSuggestions hdfs:///basicsRatingsOutput/ hdfs:///movieSuggestionOutput/

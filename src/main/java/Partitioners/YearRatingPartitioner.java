@@ -1,12 +1,15 @@
 package Partitioners;
 
 import WritableComparable.YearRatingPair;
+import Writables.YearMovieData;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Partitioner;
+import org.apache.hadoop.mapreduce.lib.partition.RehashPartitioner;
 
-public class YearRatingPartitioner extends Partitioner<YearRatingPair, NullWritable> {
+public class YearRatingPartitioner extends Partitioner<YearRatingPair, YearMovieData> {
     @Override
-    public int getPartition(YearRatingPair yearRatingPair, NullWritable nullWritable, int i) {
-        return yearRatingPair.getYear().hashCode() % i;
+    public int getPartition(YearRatingPair yearRatingPair, YearMovieData yearMovieData, int i) {
+        return new RehashPartitioner<IntWritable, YearMovieData>().getPartition(yearRatingPair.getYear(), yearMovieData, i);
     }
 }

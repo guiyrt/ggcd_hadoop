@@ -1,7 +1,11 @@
 package Jobs;
 
 import Common.Helper;
+import GroupringComparators.GenreRatingGroupingComparator;
+import GroupringComparators.YearRatingGroupingComparator;
 import Mappers.YearMovieMapper;
+import Partitioners.GenreRatingPartitioner;
+import Partitioners.YearRatingPartitioner;
 import Reducers.YearMovieReducer;
 import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
@@ -30,6 +34,9 @@ public class YearMovie {
 
         job.setInputFormatClass(AvroParquetInputFormat.class);
         job.setOutputFormatClass(AvroParquetOutputFormat.class);
+
+        job.setPartitionerClass(YearRatingPartitioner.class);
+        job.setGroupingComparatorClass(YearRatingGroupingComparator.class);
 
         AvroParquetInputFormat.addInputPath(job, new Path(args[0]));
         AvroParquetInputFormat.setRequestedProjection(job, Helper.getSchema("hdfs:////schemas/basicsRatingsProjectionForYearMovie.parquet"));

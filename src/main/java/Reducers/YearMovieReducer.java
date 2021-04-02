@@ -30,20 +30,21 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
         Map<String, GenericRecord> top10movies = new HashMap<>();
         GenericRecord mostVotedMovie = new GenericData.Record(mostVotedMovieSchema);
         int totalMovies = 0;
+        int ratedMovies = 0;
         int maxVotes = Integer.MIN_VALUE;
 
         while(iterator.hasNext()) {
             YearMovieData movie = iterator.next();
 
             // Secondary sort by avgRating orders movies by descending avgRating values
-            if (totalMovies++ < 10) {
+            if (ratedMovies < 10 && !Float.isNaN(movie.getAvgRating().get())) {
                 GenericRecord movieRatingInfo = new GenericData.Record(this.movieRatingInfo);
 
                 movieRatingInfo.put("ttconst", movie.getTtconst().toString());
                 movieRatingInfo.put("primaryTitle", movie.getPrimaryTitle().toString());
-                movieRatingInfo.put("avgRating", Float.isNaN(movie.getAvgRating().get()) ? null : movie.getAvgRating().get());
+                movieRatingInfo.put("avgRating",  movie.getAvgRating().get());
 
-                top10movies.put(Integer.toString(totalMovies), movieRatingInfo);
+                top10movies.put(Integer.toString(++ratedMovies), movieRatingInfo);
             }
 
             if (movie.getNumVotes().get() > maxVotes) {
@@ -51,13 +52,17 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
 
                 mostVotedMovie.put("ttconst", movie.getTtconst());
                 mostVotedMovie.put("primaryTitle", movie.getPrimaryTitle());
-                mostVotedMovie.put("numVotes", movie.getNumVotes().get() == Integer.MIN_VALUE ? null : movie.getNumVotes().get());
+                mostVotedMovie.put("numVotes", movie.getNumVotes().get());
             }
+
+            totalMovies++;
         }
 
         // Fill the empty space if there are less than 10 movies in a given year
-        for (int i=totalMovies+1; i<=10; i++) {
-            top10movies.put(Integer.toString(i), null);
+        if (ratedMovies < 10) {
+            for (int i = ratedMovies + 1; i <= 10; i++) {
+                top10movies.put(Integer.toString(i), null);
+            }
         }
 
         // Add top 10 ranked movies map
