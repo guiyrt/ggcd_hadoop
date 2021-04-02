@@ -1,0 +1,9 @@
+message basicsRatings {
+    required binary ttconst (STRING);
+    required binary titleType (STRING);
+    required binary primaryTitle (STRING);
+    optional group genres (LIST) {
+        repeated binary genre (STRING);
+    }
+    optional float avgRating;
+}

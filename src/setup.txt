@@ -1,0 +1,3 @@
+# Schemas to hdfs
+./cluster.sh "hdfs_upload" ../schemas /schemas
+

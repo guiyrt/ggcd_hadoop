@@ -1,8 +1,0 @@
-message basicsRatings {
-    required binary ttconst (STRING);
-    required binary titleType (STRING);
-    required binary primaryTitle (STRING);
-    optional int32 startYear (UINT_16);
-    optional float avgRating;
-    optional int32 numVotes (UINT_32);
-}

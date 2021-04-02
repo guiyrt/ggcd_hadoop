@@ -10,8 +10,10 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 
 
 // TODO: Get URIs from MAIN
@@ -22,8 +24,9 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
     private Schema schema;
     HashMap<String, Rating> ratings = new HashMap<>();
 
-    private void populateRatings() throws IOException {
-        String ratingsData = Helper.readFile("src/main/resources/title.ratings.full.tsv");
+    private void populateRatings(String ratingsFile) throws IOException {
+
+        String ratingsData = Helper.readFile(ratingsFile);
         boolean headerGone = false;
 
         // Get rows
@@ -50,8 +53,9 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
 
     @Override
     protected void setup(Context context) throws IOException {
-        schema = Helper.getSchema("src/main/schemas/basicsRatings.parquet");
-        populateRatings();
+        schema = Helper.getSchema("hdfs:////schemas/basicsRatings.parquet");
+        Optional<URI> ratingsFile = Arrays.stream(context.getCacheFiles()).findFirst();
+        populateRatings(ratingsFile.map(URI::toString).orElse(null));
     }
 
     @Override

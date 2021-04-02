@@ -1,22 +1,40 @@
 package Common;
 
 import org.apache.avro.Schema;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.parquet.avro.AvroSchemaConverter;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class Helper {
+    private static final Integer BUFFER_SIZE = 1048576; // 1MB Buffer
+
     public static String readFile(String filePath) throws IOException {
-        InputStream is = new FileInputStream(filePath);
+        FSDataInputStream stream = FileSystem.get(new Configuration()).open(new Path(filePath));
+        byte[] buffer = new byte[BUFFER_SIZE];
+        StringBuilder dataFile = new StringBuilder();
+        int readValue;
 
-        String data = new String(is.readAllBytes());
-        is.close();
+        readValue = stream.read(buffer);
+        while (readValue != -1) {
+            String dataRead = (readValue == BUFFER_SIZE) ?
+                    new String(buffer, StandardCharsets.UTF_8) :
+                    new String(Arrays.copyOf(buffer, readValue));
+            dataFile.append(dataRead);
 
-        return data;
+            readValue = stream.read(buffer);
+        }
+
+        stream.close();
+
+        return dataFile.toString();
     }
 
     public static Schema getSchema(String schemaPath) throws IOException {

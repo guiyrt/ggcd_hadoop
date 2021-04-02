@@ -18,7 +18,7 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
 
     @Override
     protected void setup(Context context) throws IOException {
-        outputSchema = Helper.getSchema("src/main/schemas/yearMovie.parquet");
+        outputSchema = Helper.getSchema("hdfs:////schemas/yearMovie.parquet");
         mostVotedMovieSchema = Helper.getSchemaFromUnion("mostVotedMovie", outputSchema.getField("mostVotedMovie").schema());
         movieRatingInfo =  Helper.getSchemaFromUnion("movieRatingInfo", outputSchema.getField("top10RatedMovies").schema().getValueType());
     }
@@ -46,7 +46,7 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
                 top10movies.put(Integer.toString(totalMovies), movieRatingInfo);
             }
 
-            if (movie.getNumVotes().get() > maxVotes || maxVotes == Integer.MIN_VALUE) {
+            if (movie.getNumVotes().get() > maxVotes) {
                 maxVotes = movie.getNumVotes().get();
 
                 mostVotedMovie.put("ttconst", movie.getTtconst());
@@ -63,8 +63,8 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
         // Add top 10 ranked movies map
         yearRecord.put("top10RatedMovies", top10movies);
 
-        // Add most voted movie
-        yearRecord.put("mostVotedMovie", mostVotedMovie);
+        // Add most voted movie, if any
+        yearRecord.put("mostVotedMovie", maxVotes == Integer.MIN_VALUE ? null : mostVotedMovie);
 
         // Year and total movies released in that year
         yearRecord.put("startYear", key.getYear().get());

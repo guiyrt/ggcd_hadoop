@@ -1,0 +1,47 @@
+- name: Storage Bucket Creation
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: no
+
+  vars:
+    gcp_project: "707747151911"
+    gcp_auth_file: "auth.json"
+    gcp_region: "europe-west1"
+    bucket_name: "ggcd-data"
+    dest: ""
+
+  tasks:
+    - name: Create storage bucket
+      google.cloud.gcp_storage_bucket:
+        name: "{{ bucket_name }}"
+        location: "{{ gcp_region }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ gcp_auth_file }}"
+        state: present
+      tags:
+        - create
+
+
+    - name: Delete storage bucket
+      command: gsutil rm -r gs://"{{ bucket_name }}"
+      tags:
+        - delete
+
+    - name: Upload file to bucket
+      command: gsutil cp -r "{{ src }}" gs://"{{ bucket_name }}"/"{{ dest }}"
+      tags:
+        - upload
+
+    - name: Action upon storage object
+      google.cloud.gcp_storage_object:
+        action: "{{ gcp_action }}"
+        bucket: "{{ bucket_name }}"
+        src: "{{ src }}"
+        dest: "{{ dest }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ gcp_auth_file }}"
+      tags:
+        - storage_object
