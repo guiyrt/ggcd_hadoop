@@ -9,7 +9,9 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Void, GenericRecord> {
     private Schema outputSchema;
@@ -18,7 +20,9 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
 
     @Override
     protected void setup(Context context) throws IOException {
-        outputSchema = Helper.getSchema("hdfs:////schemas/yearMovie.parquet");
+        List<String> cachedURIs = Arrays.stream(context.getCacheFiles()).map(URI::toString).collect(Collectors.toList());
+
+        outputSchema = Helper.getSchema(cachedURIs.get(0));
         mostVotedMovieSchema = Helper.getSchemaFromUnion("mostVotedMovie", outputSchema.getField("mostVotedMovie").schema());
         movieRatingInfo =  Helper.getSchemaFromUnion("movieRatingInfo", outputSchema.getField("top10RatedMovies").schema().getValueType());
     }

@@ -8,4 +8,4 @@
 ./cluster.sh "submit" ../../target/ggcd_hadoop-1.0.jar Jobs.YearMovie hdfs:///basicsRatingsOutput/ hdfs:///yearMovieOutput/
 
 # Job MovieSuggestions
-./cluster.sh "submit" ../../target/ggcd_hadoop-1.0.jar Jobs.MovieSuggestions hdfs:///basicsRatingsOutput/ hdfs:///movieSuggestionOutput/
+./cluster.sh "submit" ../../target/ggcd_hadoop-1.0.jar Jobs.MovieSuggestion hdfs:///basicsRatingsOutput/ hdfs:///movieSuggestionOutput/

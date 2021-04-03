@@ -8,7 +8,6 @@ import Reducers.MovieSuggestionReducer;
 import WritableComparable.GenreRatingPair;
 import Writables.MovieSuggestionData;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -16,15 +15,19 @@ import org.apache.parquet.avro.AvroParquetInputFormat;
 
 import java.io.IOException;
 
-public class MovieSuggestions {
+import java.util.Map;
+
+public class MovieSuggestion {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        FileSystem fs = FileSystem.get(new Configuration());
-        fs.delete(new Path(args[1]), true);
+        Map<String, String> options = Helper.getInputData(args);
+        Helper.deleteFolder(options.get("output"));
 
         Job job = Job.getInstance(new Configuration(), "movieSuggestionOutput");
-        job.setJarByClass(MovieSuggestions.class);
+        job.setJarByClass(MovieSuggestion.class);
         job.setMapperClass(MovieSuggestionMapper.class);
         job.setReducerClass(MovieSuggestionReducer.class);
+
+        job.setNumReduceTasks(Integer.parseInt(options.get("workers")));
 
         job.setMapOutputKeyClass(GenreRatingPair.class);
         job.setMapOutputValueClass(MovieSuggestionData.class);
@@ -33,9 +36,9 @@ public class MovieSuggestions {
         job.setPartitionerClass(GenreRatingPartitioner.class);
         job.setGroupingComparatorClass(GenreRatingGroupingComparator.class);
 
-        AvroParquetInputFormat.addInputPath(job, new Path(args[0]));
-        AvroParquetInputFormat.setRequestedProjection(job, Helper.getSchema("hdfs:////schemas/basicsRatingsProjectionForMovieSuggestion.parquet"));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        AvroParquetInputFormat.addInputPath(job, new Path(options.get("input")));
+        AvroParquetInputFormat.setRequestedProjection(job, Helper.getSchema(Helper.glueDirWithFile(options.get("schemas"), "basicsRatingsProjectionForMovieSuggestion.parquet")));
+        FileOutputFormat.setOutputPath(job, new Path(options.get("output")));
 
         job.waitForCompletion(true);
     }

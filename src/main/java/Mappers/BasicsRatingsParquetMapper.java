@@ -11,21 +11,18 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
-
-
-// TODO: Get URIs from MAIN
-// TODO: Read ratings compressed
-
+import java.util.stream.Collectors;
 
 public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {
     private Schema schema;
     HashMap<String, Rating> ratings = new HashMap<>();
 
     private void populateRatings(String ratingsFile) throws IOException {
-
         String ratingsData = Helper.readFile(ratingsFile);
         boolean headerGone = false;
 
@@ -53,9 +50,11 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
 
     @Override
     protected void setup(Context context) throws IOException {
-        schema = Helper.getSchema("hdfs:////schemas/basicsRatings.parquet");
-        Optional<URI> ratingsFile = Arrays.stream(context.getCacheFiles()).findFirst();
-        populateRatings(ratingsFile.map(URI::toString).orElse(null));
+        List<String> cachedURIs = Arrays.stream(context.getCacheFiles()).map(URI::toString).collect(Collectors.toList());
+
+        populateRatings(cachedURIs.get(0));
+        schema = Helper.getSchema(cachedURIs.get(1));
+
     }
 
     @Override

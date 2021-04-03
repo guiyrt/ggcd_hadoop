@@ -11,12 +11,6 @@ IMAGE_VERSION="2.0-debian10"
 MAX_IDLE_SECONDS="7200s"
 SCOPE="https://www.googleapis.com/auth/cloud-platform"
 
-
-# Input parameter should be action to perform upon cluster
-#if test "$#" -ne 1; then
-#    echo "Illegal number of parameters!"
-#fi
-
 case $1 in
 
   # Create cluster
@@ -41,14 +35,14 @@ case $1 in
 
   # Submit job
   "submit")
-    gcloud dataproc jobs submit hadoop --region=$REGION --cluster=$CLUSTER_NAME  --jars="$2" --class="$3" -- "$4" "$5" "$6"
+    gcloud dataproc jobs submit hadoop --region=$REGION --cluster=$CLUSTER_NAME  --jars="$2" --class="$3" -- "${@:4}" --workers=$WORKERS
     ;;
 
   # Add file to HDFS
   "hdfs_upload")
     FILE="$(basename "$2")"
     gcloud compute scp --recurse --zone="$ZONE" "$2" "$CLUSTER_NAME"-m:"$FILE"
-    gcloud compute ssh --zone="$ZONE" "$CLUSTER_NAME"-m --command="hdfs dfs -put $FILE /$FILE"
+    gcloud compute ssh --zone="$ZONE" "$CLUSTER_NAME"-m --command="hdfs dfs -put $FILE $3; rm -r $FILE"
     ;;
 
   # Download files from HDFS

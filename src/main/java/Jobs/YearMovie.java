@@ -1,10 +1,8 @@
 package Jobs;
 
 import Common.Helper;
-import GroupringComparators.GenreRatingGroupingComparator;
 import GroupringComparators.YearRatingGroupingComparator;
 import Mappers.YearMovieMapper;
-import Partitioners.GenreRatingPartitioner;
 import Partitioners.YearRatingPartitioner;
 import Reducers.YearMovieReducer;
 import WritableComparable.YearRatingPair;
@@ -18,16 +16,21 @@ import org.apache.parquet.avro.AvroParquetInputFormat;
 import org.apache.parquet.avro.AvroParquetOutputFormat;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
 
 public class YearMovie {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        FileSystem fs = FileSystem.get(new Configuration());
-        fs.delete(new Path(args[1]), true);
+        Map<String, String> options = Helper.getInputData(args);
+        Helper.deleteFolder(options.get("output"));
 
         Job job =  Job.getInstance(new Configuration(), "yearMovieJob");
         job.setJarByClass(YearMovie.class);
         job.setMapperClass(YearMovieMapper.class);
         job.setReducerClass(YearMovieReducer.class);
+
+        job.setNumReduceTasks(Integer.parseInt(options.get("workers")));
+        job.addCacheFile(URI.create(Helper.glueDirWithFile(options.get("schemas"), "yearMovie.parquet")));
 
         job.setMapOutputKeyClass(YearRatingPair.class);
         job.setMapOutputValueClass(YearMovieData.class);
@@ -38,10 +41,10 @@ public class YearMovie {
         job.setPartitionerClass(YearRatingPartitioner.class);
         job.setGroupingComparatorClass(YearRatingGroupingComparator.class);
 
-        AvroParquetInputFormat.addInputPath(job, new Path(args[0]));
-        AvroParquetInputFormat.setRequestedProjection(job, Helper.getSchema("hdfs:////schemas/basicsRatingsProjectionForYearMovie.parquet"));
-        AvroParquetOutputFormat.setSchema(job, Helper.getSchema("hdfs:////schemas/yearMovie.parquet"));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        AvroParquetInputFormat.addInputPath(job, new Path(options.get("input")));
+        AvroParquetInputFormat.setRequestedProjection(job, Helper.getSchema(Helper.glueDirWithFile(options.get("schemas"), "basicsRatingsProjectionForYearMovie.parquet")));
+        AvroParquetOutputFormat.setSchema(job, Helper.getSchema(Helper.glueDirWithFile(options.get("schemas"), "yearMovie.parquet")));
+        FileOutputFormat.setOutputPath(job, new Path(options.get("output")));
 
         job.waitForCompletion(true);
     }

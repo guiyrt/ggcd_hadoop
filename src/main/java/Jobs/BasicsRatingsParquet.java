@@ -4,7 +4,6 @@ import Common.Helper;
 import Mappers.BasicsRatingsParquetMapper;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -14,11 +13,14 @@ import org.apache.parquet.avro.AvroParquetOutputFormat;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
+
+import static Common.Helper.glueDirWithFile;
 
 public class BasicsRatingsParquet {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        FileSystem fs = FileSystem.get(new Configuration());
-        fs.delete(new Path(args[2]), true);
+        Map<String, String> options = Helper.getInputData(args);
+        Helper.deleteFolder(options.get("output"));
 
         Job job =  Job.getInstance(new Configuration(), "basicsRatingsParquetJob");
         job.setJarByClass(BasicsRatingsParquet.class);
@@ -32,10 +34,11 @@ public class BasicsRatingsParquet {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(AvroParquetOutputFormat.class);
 
-        AvroParquetOutputFormat.setSchema(job, Helper.getSchema("hdfs:/schemas/basicsRatings.parquet"));
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        job.addCacheFile(URI.create(args[1]));
-        FileOutputFormat.setOutputPath(job, new Path(args[2]));
+        AvroParquetOutputFormat.setSchema(job, Helper.getSchema(Helper.glueDirWithFile(options.get("schemas"), "basicsRatings.parquet")));
+        FileInputFormat.addInputPath(job, new Path(options.get("input")));
+        job.addCacheFile(URI.create(options.get("ratings")));
+        job.addCacheFile(URI.create(glueDirWithFile(options.get("schemas"), "basicsRatings.parquet")));
+        FileOutputFormat.setOutputPath(job, new Path(options.get("output")));
 
         job.waitForCompletion(true);
     }
