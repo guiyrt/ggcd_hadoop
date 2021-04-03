@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Helper {
     private static final Integer BUFFER_SIZE = 1048576; // 1MB Buffer
@@ -126,5 +127,19 @@ public class Helper {
             FileSystem fs = FileSystem.get(new Configuration());
             return fs.open(new Path(path));
         }
+    }
+
+    public static List<String> missingOptions(Map<String, String> options, List<String> required) {
+        return required.stream().filter(a ->  !options.containsKey(a)).collect(Collectors.toList());
+    }
+
+    public static String missingOptionsString(List<String> missingOptions) {
+        StringBuilder sb = new StringBuilder();
+
+        for (String option: missingOptions) {
+            sb.append("--").append(option).append(" ");
+        }
+
+        return sb.toString();
     }
 }
