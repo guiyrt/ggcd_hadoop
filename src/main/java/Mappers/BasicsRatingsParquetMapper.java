@@ -11,11 +11,9 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {

@@ -3,7 +3,6 @@ package Partitioners;
 import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.lib.partition.RehashPartitioner;
 

@@ -20,7 +20,10 @@ import static Common.Helper.glueDirWithFile;
 public class BasicsRatingsParquet {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Map<String, String> options = Helper.getInputData(args);
-        Helper.deleteFolder(options.get("output"));
+
+        if (options.containsKey("overwrite") && Boolean.parseBoolean(options.get("overwrite"))) {
+            Helper.deleteFolder(options.get("output"));
+        }
 
         Job job =  Job.getInstance(new Configuration(), "basicsRatingsParquetJob");
         job.setJarByClass(BasicsRatingsParquet.class);

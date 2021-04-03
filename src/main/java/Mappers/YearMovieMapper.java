@@ -3,7 +3,6 @@ package Mappers;
 import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;

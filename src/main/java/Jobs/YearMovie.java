@@ -8,7 +8,6 @@ import Reducers.YearMovieReducer;
 import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -22,7 +21,10 @@ import java.util.Map;
 public class YearMovie {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Map<String, String> options = Helper.getInputData(args);
-        Helper.deleteFolder(options.get("output"));
+
+        if (options.containsKey("overwrite") && Boolean.parseBoolean(options.get("overwrite"))) {
+            Helper.deleteFolder(options.get("output"));
+        }
 
         Job job =  Job.getInstance(new Configuration(), "yearMovieJob");
         job.setJarByClass(YearMovie.class);
