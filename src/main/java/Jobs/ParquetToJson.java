@@ -2,8 +2,9 @@ package Jobs;
 
 import Common.Helper;
 import FileOutputFormatters.JsonOutputFormat;
-import Mappers.ParquetToJsonMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import Mappers.ParquetToJsonEntriesMapper;
+import Mappers.ParquetToJsonIDsMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -22,6 +23,7 @@ public class ParquetToJson {
     private static final List<String> requiredOptions = Arrays.asList("input", "output");
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+        Job job = Job.getInstance(new Configuration(), "basicsRatingsJsonJob");
         Map<String, String> options = Helper.getInputData(args);
         List<String> missingOptions = Helper.missingOptions(options, requiredOptions);
 
@@ -36,14 +38,20 @@ public class ParquetToJson {
             Helper.deleteFolder(options.get("output"));
         }
 
-        Job job = Job.getInstance(new Configuration(), "basicsRatingsJsonJob");
-        job.setJarByClass(ParquetToJson.class);
-        job.setMapperClass(ParquetToJsonMapper.class);
+        // If specified, use mapper that uses the first attribute as ID
+        if (options.containsKey("firstAsId") && Boolean.parseBoolean(options.get("firstAsId"))) {
+            job.setMapperClass(ParquetToJsonIDsMapper.class);
+        }
 
+        else {
+            job.setMapperClass(ParquetToJsonEntriesMapper.class);
+        }
+
+        job.setJarByClass(ParquetToJson.class);
         job.setNumReduceTasks(0);
 
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(ObjectNode.class);
+        job.setOutputValueClass(JsonNode.class);
 
         job.setInputFormatClass(AvroParquetInputFormat.class);
         job.setOutputFormatClass(JsonOutputFormat.class);

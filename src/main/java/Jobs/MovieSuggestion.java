@@ -22,9 +22,10 @@ import java.util.Map;
 import static Common.Helper.missingOptionsString;
 
 public class MovieSuggestion {
-    private static final List<String> requiredOptions = Arrays.asList("input", "output", "schemas", "workers");
+    private static final List<String> requiredOptions = Arrays.asList("input", "output", "schemas");
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+        Job job = Job.getInstance(new Configuration(), "movieSuggestionOutput");
         Map<String, String> options = Helper.getInputData(args);
         List<String> missingOptions = Helper.missingOptions(options, requiredOptions);
 
@@ -39,12 +40,14 @@ public class MovieSuggestion {
             Helper.deleteFolder(options.get("output"));
         }
 
-        Job job = Job.getInstance(new Configuration(), "movieSuggestionOutput");
+        // Define number of reducers if specified
+        if (options.containsKey("reducers") && Integer.parseInt(options.get("reducers")) > 0) {
+            job.setNumReduceTasks(Integer.parseInt(options.get("reducers")));
+        }
+
         job.setJarByClass(MovieSuggestion.class);
         job.setMapperClass(MovieSuggestionMapper.class);
         job.setReducerClass(MovieSuggestionReducer.class);
-
-        job.setNumReduceTasks(Integer.parseInt(options.get("workers")));
 
         job.setMapOutputKeyClass(GenreRatingPair.class);
         job.setMapOutputValueClass(MovieSuggestionData.class);

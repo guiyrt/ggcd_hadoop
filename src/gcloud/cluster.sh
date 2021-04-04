@@ -58,7 +58,7 @@ case $1 in
   # Submit job
   "submit")
     argcGe "$#" 3 "Invalid input parameters, submit requires at least 2 parameters.\\nUsage: ./create.sh submit <JARS> <MAIN_CLASS> [JOB ARGUMENTS]"
-    gcloud dataproc jobs submit hadoop --region=$REGION --cluster=$CLUSTER_NAME  --jars="$2" --class="$3" -- "${@:4}" --workers=$WORKERS
+    gcloud dataproc jobs submit hadoop --region=$REGION --cluster=$CLUSTER_NAME  --jars="$2" --class="$3" -- "${@:4}" --reducers=$WORKERS
     ;;
 
   # Add file to HDFS

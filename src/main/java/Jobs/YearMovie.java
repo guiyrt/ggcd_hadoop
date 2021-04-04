@@ -26,6 +26,7 @@ public class YearMovie {
     private static final List<String> requiredOptions = Arrays.asList("input", "output", "schemas", "workers");
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+        Job job =  Job.getInstance(new Configuration(), "yearMovieJob");
         Map<String, String> options = Helper.getInputData(args);
         List<String> missingOptions = Helper.missingOptions(options, requiredOptions);
 
@@ -40,7 +41,11 @@ public class YearMovie {
             Helper.deleteFolder(options.get("output"));
         }
 
-        Job job =  Job.getInstance(new Configuration(), "yearMovieJob");
+        // Define number of reducers if specified
+        if (options.containsKey("reducers") && Integer.parseInt(options.get("reducers")) > 0) {
+            job.setNumReduceTasks(Integer.parseInt(options.get("reducers")));
+        }
+
         job.setJarByClass(YearMovie.class);
         job.setMapperClass(YearMovieMapper.class);
         job.setReducerClass(YearMovieReducer.class);

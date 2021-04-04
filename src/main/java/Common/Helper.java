@@ -1,7 +1,12 @@
 package Common;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem;
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -141,5 +146,78 @@ public class Helper {
         }
 
         return sb.toString();
+    }
+
+    public static JsonNode fieldToNode(Object fieldValue, Schema fieldSchema) throws ClassCastException, NullPointerException {
+        switch (fieldSchema.getType()) {
+            case NULL:
+                if (!Objects.isNull(fieldValue)) throw new ClassCastException();
+                return JsonNodeFactory.instance.nullNode();
+
+            case INT:
+                return JsonNodeFactory.instance.numberNode((int) fieldValue);
+
+            case LONG:
+                return JsonNodeFactory.instance.numberNode((long) fieldValue);
+
+            case FLOAT:
+                return JsonNodeFactory.instance.numberNode((float) fieldValue);
+
+            case DOUBLE:
+                return JsonNodeFactory.instance.numberNode((double) fieldValue);
+
+            case STRING:
+            case ENUM:
+                return JsonNodeFactory.instance.textNode((String) fieldValue);
+
+            case BOOLEAN:
+                return JsonNodeFactory.instance.booleanNode((boolean) fieldValue);
+
+            case ARRAY:
+                List<Object> array = (List<Object>) fieldValue;
+                Schema itemSchema = fieldSchema.getElementType();
+                ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+                array.forEach(item -> arrayNode.add(fieldToNode(item, itemSchema)));
+
+                return arrayNode;
+
+            case MAP:
+                Map<String, Object> map = (Map<String, Object>) fieldValue;
+                Schema entrySchema = fieldSchema.getValueType();
+                ObjectNode mapNode = JsonNodeFactory.instance.objectNode();
+                map.forEach((id, value) -> mapNode.set(id, fieldToNode(value, entrySchema)));
+
+                return mapNode;
+
+            case UNION:
+                List<Schema> union = fieldSchema.getTypes();
+                JsonNode node = JsonNodeFactory.instance.objectNode();
+
+                for(Schema schema: union) {
+
+                    // Since schema type is union, object class has multiple possibilities
+                    try {
+                        node = fieldToNode(fieldValue, schema);
+                    } catch (NullPointerException | ClassCastException ignored) {}
+                }
+
+                return node;
+
+            case RECORD:
+                GenericRecord record = (GenericRecord) fieldValue;
+                ObjectNode recordNode = JsonNodeFactory.instance.objectNode();
+                List<Schema.Field> fields = record.getSchema().getFields();
+                fields.forEach(field -> recordNode.set(field.name(), fieldToNode(record.get(field.name()), field.schema())));
+
+                return  recordNode;
+
+            case FIXED:
+            case BYTES:
+                byte[] fixed = (byte[]) fieldValue;
+                return JsonNodeFactory.instance.textNode(new String(fixed));
+
+            default:
+                return JsonNodeFactory.instance.nullNode();
+        }
     }
 }

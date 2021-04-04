@@ -24,6 +24,7 @@ public class BasicsRatingsParquet {
     private static final List<String> requiredOptions = Arrays.asList("input", "output", "ratings", "schemas");
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+        Job job = Job.getInstance(new Configuration(), "basicsRatingsParquetJob");
         Map<String, String> options = Helper.getInputData(args);
         List<String> missingOptions = Helper.missingOptions(options, requiredOptions);
 
@@ -38,7 +39,6 @@ public class BasicsRatingsParquet {
             Helper.deleteFolder(options.get("output"));
         }
 
-        Job job = Job.getInstance(new Configuration(), "basicsRatingsParquetJob");
         job.setJarByClass(BasicsRatingsParquet.class);
         job.setMapperClass(BasicsRatingsParquetMapper.class);
 

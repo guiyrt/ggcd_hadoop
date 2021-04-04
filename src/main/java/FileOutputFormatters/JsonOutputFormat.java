@@ -1,6 +1,7 @@
 package FileOutputFormatters;
 
 import RecordWriters.JsonRecordWriter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.hadoop.conf.Configuration;
@@ -16,7 +17,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import java.io.IOException;
 
 
-public class JsonOutputFormat extends FileOutputFormat<Text, ObjectNode> {
+public class JsonOutputFormat extends FileOutputFormat<Text, JsonNode> {
     private static final String filename = "output";
     private static final String extension = ".json";
 
@@ -27,7 +28,7 @@ public class JsonOutputFormat extends FileOutputFormat<Text, ObjectNode> {
     }
 
     @Override
-    public RecordWriter<Text, ObjectNode> getRecordWriter(TaskAttemptContext job) throws IOException {
+    public RecordWriter<Text, JsonNode> getRecordWriter(TaskAttemptContext job) throws IOException {
         Configuration conf = job.getConfiguration();
 
         FileOutputCommitter committer = (FileOutputCommitter) getOutputCommitter(job);
