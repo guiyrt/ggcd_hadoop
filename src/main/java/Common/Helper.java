@@ -195,7 +195,7 @@ public class Helper {
 
                 for(Schema schema: union) {
 
-                    // Since schema type is union, object class has multiple possibilities
+                    // Since schema type is union, the class of fieldValue has multiple possibilities
                     try {
                         node = fieldToNode(fieldValue, schema);
                     } catch (NullPointerException | ClassCastException ignored) {}
