@@ -1,27 +1,25 @@
 package Jobs;
 
 import Common.Helper;
-import Mappers.BasicsRatingsParquetMapper;
-import org.apache.avro.generic.GenericRecord;
+import FileOutputFormatters.JsonOutputFormat;
+import Mappers.ParquetToJsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.parquet.avro.AvroParquetOutputFormat;
+import org.apache.parquet.avro.AvroParquetInputFormat;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static Common.Helper.glueDirWithFile;
 import static Common.Helper.missingOptionsString;
 
-public class BasicsRatingsParquet {
-    private static final List<String> requiredOptions = Arrays.asList("input", "output", "ratings", "schemas");
+public class ParquetToJson {
+    private static final List<String> requiredOptions = Arrays.asList("input", "output");
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Map<String, String> options = Helper.getInputData(args);
@@ -38,24 +36,22 @@ public class BasicsRatingsParquet {
             Helper.deleteFolder(options.get("output"));
         }
 
-        Job job = Job.getInstance(new Configuration(), "basicsRatingsParquetJob");
-        job.setJarByClass(BasicsRatingsParquet.class);
-        job.setMapperClass(BasicsRatingsParquetMapper.class);
+        Job job = Job.getInstance(new Configuration(), "basicsRatingsJsonJob");
+        job.setJarByClass(ParquetToJson.class);
+        job.setMapperClass(ParquetToJsonMapper.class);
 
         job.setNumReduceTasks(0);
 
-        job.setOutputKeyClass(Void.class);
-        job.setOutputValueClass(GenericRecord.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(ObjectNode.class);
 
-        job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(AvroParquetOutputFormat.class);
+        job.setInputFormatClass(AvroParquetInputFormat.class);
+        job.setOutputFormatClass(JsonOutputFormat.class);
 
-        AvroParquetOutputFormat.setSchema(job, Helper.getSchema(Helper.glueDirWithFile(options.get("schemas"), "basicsRatings.parquet")));
-        FileInputFormat.addInputPath(job, new Path(options.get("input")));
-        job.addCacheFile(URI.create(options.get("ratings")));
-        job.addCacheFile(URI.create(glueDirWithFile(options.get("schemas"), "basicsRatings.parquet")));
+        AvroParquetInputFormat.addInputPath(job, new Path(options.get("input")));
         FileOutputFormat.setOutputPath(job, new Path(options.get("output")));
 
         job.waitForCompletion(true);
     }
+
 }
