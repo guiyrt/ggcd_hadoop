@@ -36,7 +36,7 @@
 
     - name: Action upon storage object
       google.cloud.gcp_storage_object:
-        action: "{{ gcp_action }}"
+        action: "{{ gs_action }}"
         bucket: "{{ bucket_name }}"
         src: "{{ src }}"
         dest: "{{ dest }}"

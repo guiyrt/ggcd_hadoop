@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class MovieSuggestionReducer extends Reducer<GenreRatingPair, MovieSuggestionData, Void, Text> {
-    private static final String headers = "ttconst\tprimaryTitle\tmainGenre\tsuggestedTtconst\tsuggestedPrimaryTitle\tsuggestedAvgRating";
-
 
     private Text buildEntry(MovieSuggestionData msd, MovieSuggestionData topMovie, String mainGenre) {
         StringBuilder sb = new StringBuilder();

@@ -1,6 +1,6 @@
 package Reducers;
 
-import Common.Helper;
+import Common.Job;
 import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
 import org.apache.avro.Schema;
@@ -22,9 +22,11 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
     protected void setup(Context context) throws IOException {
         List<String> cachedURIs = Arrays.stream(context.getCacheFiles()).map(URI::toString).collect(Collectors.toList());
 
-        outputSchema = Helper.getSchema(cachedURIs.get(0));
-        mostVotedMovieSchema = Helper.getSchemaFromUnion("mostVotedMovie", outputSchema.getField("mostVotedMovie").schema());
-        movieRatingInfo =  Helper.getSchemaFromUnion("movieRatingInfo", outputSchema.getField("top10RatedMovies").schema().getValueType());
+        outputSchema = Common.IO.readSchema(cachedURIs.get(0));
+        mostVotedMovieSchema = Common.AvroSchemas.getSchemaFromUnion("mostVotedMovie",
+                outputSchema.getField("mostVotedMovie").schema());
+        movieRatingInfo =  Common.AvroSchemas.getSchemaFromUnion("movieRatingInfo",
+                outputSchema.getField("top10RatedMovies").schema().getValueType());
     }
 
     @Override

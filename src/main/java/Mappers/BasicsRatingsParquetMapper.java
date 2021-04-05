@@ -1,7 +1,5 @@
 package Mappers;
 
-import Common.Helper;
-import Common.Rating;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -20,8 +18,26 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
     private Schema schema;
     HashMap<String, Rating> ratings = new HashMap<>();
 
+    private static class Rating {
+        private final double avgRating;
+        private final int numVotes;
+
+        public Rating(double avgRating, int numVotes) {
+            this.avgRating = avgRating;
+            this.numVotes = numVotes;
+        }
+
+        public double getAvgRating() {
+            return avgRating;
+        }
+
+        public int getNumVotes() {
+            return numVotes;
+        }
+    }
+
     private void populateRatings(String ratingsFile) throws IOException {
-        String ratingsData = Helper.readFile(ratingsFile);
+        String ratingsData = Common.IO.readFile(ratingsFile);
         boolean headerGone = false;
 
         // Get rows
@@ -51,8 +67,7 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
         List<String> cachedURIs = Arrays.stream(context.getCacheFiles()).map(URI::toString).collect(Collectors.toList());
 
         populateRatings(cachedURIs.get(0));
-        schema = Helper.getSchema(cachedURIs.get(1));
-
+        schema = Common.IO.readSchema(cachedURIs.get(1));
     }
 
     @Override

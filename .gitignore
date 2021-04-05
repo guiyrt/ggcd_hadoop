@@ -1,5 +1,6 @@
+# Maven generated files
 target
-.idea
+dependency-reduced-pom.xml
 
 # Compiled class file
 *.class
@@ -7,11 +8,8 @@ target
 # Log file
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# IntelliJ files
+.idea
 
 # Package Files #
 *.jar

@@ -1,6 +1,6 @@
 package Mappers;
 
-import Common.Helper;
+import Common.Job;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -14,7 +14,7 @@ public class ParquetToJsonEntriesMapper extends Mapper<Void, GenericRecord, Text
 
     @Override
     protected void map(Void key, GenericRecord value, Context context) throws IOException, InterruptedException {
-        JsonNode convertedRecord = Helper.fieldToNode(value, value.getSchema());
+        JsonNode convertedRecord = Common.AvroSchemas.fieldToNode(value, value.getSchema());
         ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
         arrayNode.add(convertedRecord);
 
