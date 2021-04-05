@@ -20,6 +20,7 @@ public class MovieSuggestionMapper extends Mapper<Void, GenericRecord, GenreRati
             Float avgRating = (Float) value.get("avgRating");
 
             // If movie has no associated genres, define main genre as "None"
+            @SuppressWarnings("unchecked")
             String mainGenre = value.get("genres") == null ? "None" : ((List<String>) value.get("genres")).get(0);
 
             context.write(new GenreRatingPair(mainGenre, avgRating == null ? 0 : avgRating), new MovieSuggestionData(ttconst, titleType, primaryTitle, avgRating));

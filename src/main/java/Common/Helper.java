@@ -174,6 +174,7 @@ public class Helper {
                 return JsonNodeFactory.instance.booleanNode((boolean) fieldValue);
 
             case ARRAY:
+                @SuppressWarnings("unchecked")
                 List<Object> array = (List<Object>) fieldValue;
                 Schema itemSchema = fieldSchema.getElementType();
                 ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
@@ -182,6 +183,7 @@ public class Helper {
                 return arrayNode;
 
             case MAP:
+                @SuppressWarnings("unchecked")
                 Map<String, Object> map = (Map<String, Object>) fieldValue;
                 Schema entrySchema = fieldSchema.getValueType();
                 ObjectNode mapNode = JsonNodeFactory.instance.objectNode();
