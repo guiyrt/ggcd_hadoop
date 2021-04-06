@@ -56,7 +56,7 @@ case $1 in
   # Delete cluster
   "delete")
     argcEq "$#" 1 "Invalid input parameters, delete requires no parameters"
-    gcloud dataproc clusters delete $CLUSTER_NAME --region=$REGION --async
+    gcloud dataproc clusters delete $CLUSTER_NAME --region=$REGION
     ;;
 
   # Submit job
@@ -80,7 +80,7 @@ case $1 in
     TIMESTAMP="$(date +%s%N)"
     DEST_PATH="$(echo "$3" | sed 's:/*$::')"
     gcloud compute ssh --zone="$ZONE" "$CLUSTER_NAME"-m --command="hdfs dfs -get $2 $FILE-$TIMESTAMP"
-    gcloud compute scp --recurse --zone="$ZONE" "$CLUSTER_NAME"-m:"$FILE"-"$TIMESTAMP" "$DEST_PATH"/"$FILE-$TIMESTAMP"
+    gcloud compute scp --recurse --zone="$ZONE" "$CLUSTER_NAME"-m:"$FILE"-"$TIMESTAMP" "$DEST_PATH"/"$FILE"
     gcloud compute ssh --zone="$ZONE" "$CLUSTER_NAME"-m --command="rm -rf $FILE-$TIMESTAMP"
     ;;
 
