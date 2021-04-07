@@ -86,7 +86,7 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
             totalMovies++;
         }
 
-        // Fill the empty space if there are less than 10 movies in a given year
+        // Fill the empty space if there are less than 10 ranked movies in a given year
         if (ratedMovies < 10) {
             for (int i = ratedMovies + 1; i <= 10; i++) {
                 top10movies.put(Integer.toString(i), null);
