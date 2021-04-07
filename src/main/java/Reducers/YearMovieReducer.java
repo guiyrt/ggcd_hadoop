@@ -21,7 +21,7 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
     private Schema movieRatingInfo;
 
     /**
-     * Loads schemas
+     * Overwrite setup method to loads schemas
      * @param context Reducer context
      * @throws IOException Related with read operations
      */
