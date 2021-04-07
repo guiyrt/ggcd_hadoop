@@ -14,10 +14,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Mapper definition for BasicsRatings Job
+ */
 public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void, GenericRecord> {
     private Schema schema;
     HashMap<String, Rating> ratings = new HashMap<>();
 
+    /**
+     * Class definition to store data related with imdb ratings file
+     * Used to associate ttconst with numVotes and avgRating
+     */
     private static class Rating {
         private final double avgRating;
         private final int numVotes;
@@ -27,15 +34,28 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
             this.numVotes = numVotes;
         }
 
+        /**
+         * Getter for avgRating
+         * @return avgRating
+         */
         public double getAvgRating() {
             return avgRating;
         }
 
+        /**
+         * Getter for numVotes
+         * @return numVotes
+         */
         public int getNumVotes() {
             return numVotes;
         }
     }
 
+    /**
+     * Given the imdb file regarding ratings, fills the "ratings" hashmap, associating ttconst with Rating instance
+     * @param ratingsFile Input text file
+     * @throws IOException Related with file reading operation
+     */
     private void populateRatings(String ratingsFile) throws IOException {
         String ratingsData = Common.IO.readFile(ratingsFile);
         boolean headerGone = false;
@@ -62,6 +82,11 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
         }
     }
 
+    /**
+     * Prepares the data to mapper execution
+     * @param context Mapper context
+     * @throws IOException Associated with read operations
+     */
     @Override
     protected void setup(Context context) throws IOException {
         List<String> cachedURIs = Arrays.stream(context.getCacheFiles()).map(URI::toString).collect(Collectors.toList());
@@ -70,6 +95,14 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
         schema = Common.IO.readSchema(cachedURIs.get(1));
     }
 
+    /**
+     * Map method definition
+     * @param key Line from input text file
+     * @param value Content of line
+     * @param context Mapper context
+     * @throws IOException Associated with write context call
+     * @throws InterruptedException Associated with write context call
+     */
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         // Ignore header

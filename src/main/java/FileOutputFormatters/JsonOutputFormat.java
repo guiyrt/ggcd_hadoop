@@ -15,7 +15,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 
-
+/**
+ * FileOutputFormat implementation to write to JSON files
+ */
 public class JsonOutputFormat extends FileOutputFormat<Text, JsonNode> {
     private static final String filename = "output";
     private static final String extension = ".json";

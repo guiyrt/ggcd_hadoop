@@ -7,9 +7,20 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 
+/**
+ * Mapper related to YearMovie job
+ */
 public class YearMovieMapper extends Mapper<Void, GenericRecord, YearRatingPair, YearMovieData> {
     private static final String TYPE_MOVIE = "movie";
 
+    /**
+     * Map method definition
+     * @param key Always null, as input data is from parquet file
+     * @param value GenericRecord instance
+     * @param context Mapper context
+     * @throws IOException Associated with write context call
+     * @throws InterruptedException Associated with write context call
+     */
     @Override
     protected void map(Void key, GenericRecord value, Context context) throws IOException, InterruptedException {
         String titleType = (String) value.get("titleType");

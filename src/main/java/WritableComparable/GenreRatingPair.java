@@ -9,49 +9,88 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/**
+ * Implementation of WritableComparable to enable secondary sort in MovieSuggestion Job
+ */
 public class GenreRatingPair implements Writable, WritableComparable<GenreRatingPair> {
     private final Text genre;
-    private final FloatWritable rating;
+    private final FloatWritable avgRating;
 
-    public  GenreRatingPair() {
+    /**
+     * Empty constructor (used by Hadoop)
+     */
+    public GenreRatingPair() {
         genre = new Text();
-        rating = new FloatWritable();
+        avgRating = new FloatWritable();
     }
 
-    public GenreRatingPair(String genre, float rating) {
+    /**
+     * Default constructor
+     * @param genre Genre of a movie
+     * @param avgRating Rating of a movie
+     */
+    public GenreRatingPair(String genre, Float avgRating) {
         this.genre = new Text(genre);
-        this.rating = new FloatWritable(rating);
+        this.avgRating = avgRating == null ? new FloatWritable(Float.NaN) : new FloatWritable(avgRating);
     }
 
+    /**
+     * Method that compares instance with another input GenreRatingPair
+     * If both have the same genre, then sort by descending rating
+     * @param grp Other GenreRatingPair instance
+     * @return Comparison result
+     */
     @Override
     public int compareTo(GenreRatingPair grp) {
         int compareGRP = genre.compareTo(grp.getGenre());
 
         if (compareGRP == 0) {
+            // If any of the avgRating is Nan, use impossible rating value of -1
             // Multiply by -1 to get reverse order
-            compareGRP = rating.compareTo(grp.getRating()) * -1;
+            Float avgRating1 = Float.isNaN(avgRating.get()) ? -1 : avgRating.get();
+            Float avgRating2 = Float.isNaN(grp.getAvgRating().get()) ? -1 : grp.getAvgRating().get();
+
+            compareGRP = avgRating1.compareTo(avgRating2) * -1;
         }
 
         return compareGRP;
     }
 
+    /**
+     * Overwrite of write method to write class attributes
+     * @param dataOutput DataOutput instance
+     * @throws IOException Related with write operations
+     */
     @Override
     public void write(DataOutput dataOutput) throws IOException {
         genre.write(dataOutput);
-        rating.write(dataOutput);
+        avgRating.write(dataOutput);
     }
 
+    /**
+     * Overwrite of write method to read values to class attributes
+     * @param dataInput DataInput instance
+     * @throws IOException Related with read operations
+     */
     @Override
     public void readFields(DataInput dataInput) throws IOException {
         genre.readFields(dataInput);
-        rating.readFields(dataInput);
+        avgRating.readFields(dataInput);
     }
 
+    /**
+     * Getter for genre
+     * @return genre
+     */
     public Text getGenre() {
         return genre;
     }
 
-    public FloatWritable getRating() {
-        return rating;
+    /**
+     * Getter for avgRating
+     * @return avgRating
+     */
+    public FloatWritable getAvgRating() {
+        return avgRating;
     }
 }

@@ -18,9 +18,18 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Definition of IO related methods
+ */
 public class IO {
     private static final Integer BUFFER_SIZE = 1048576; // 1MB Buffer
 
+    /**
+     * Given a file path, returns a String with content
+     * @param filePath Path to file
+     * @return File in String format
+     * @throws IOException Read operations might throw this exception
+     */
     public static String readFile(String filePath) throws IOException {
         FSDataInputStream stream = getFileInputStream(filePath);
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -42,11 +51,23 @@ public class IO {
         return dataFile.toString();
     }
 
+    /**
+     * Given a path to a schema, returns the associated Schema instance
+     * @param schemaPath Path to schema file
+     * @return Correspondent schema instance
+     * @throws IOException Read operations might throw this exception
+     */
     public static Schema readSchema(String schemaPath) throws IOException {
         MessageType mt = MessageTypeParser.parseMessageType(readFile(schemaPath));
         return new AvroSchemaConverter().convert(mt);
     }
 
+    /**
+     * Gets the filesystem related to a given path
+     * @param path Path to a Google Storage bucket
+     * @return Filesystem to interact with bucket
+     * @throws IOException Read operations might throw this exception
+     */
     public static GoogleHadoopFileSystem getGS(String path) throws IOException {
         Pattern bucketPattern = Pattern.compile("(?<=//)(.*?)(?=/)");
         Matcher bucketMatcher = bucketPattern.matcher(path);
@@ -66,6 +87,11 @@ public class IO {
 
     }
 
+    /**
+     * Given a folder in a bucket, deletes it
+     * @param path Path to folder
+     * @throws IOException Read operations might throw this exception
+     */
     public static void deleteFolder(String path) throws IOException {
         if (path.contains("gs://")) {
             GoogleHadoopFileSystem gs = getGS(path);
@@ -78,6 +104,12 @@ public class IO {
         }
     }
 
+    /**
+     * Given a file path, returns the correct inputStream to interact with
+     * @param path Path to file
+     * @return InputStream to interact with file
+     * @throws IOException Read operations might throw this exception
+     */
     public static FSDataInputStream getFileInputStream(String path) throws IOException {
         if (path.contains("gs://")) {
             GoogleHadoopFileSystem gs = getGS(path);

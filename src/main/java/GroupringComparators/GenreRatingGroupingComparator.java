@@ -4,6 +4,9 @@ import WritableComparable.GenreRatingPair;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 
+/**
+ *  Grouping Comparator implementation, so that comparison only compares by natural key "genre"
+ */
 public class GenreRatingGroupingComparator extends WritableComparator {
     public GenreRatingGroupingComparator() {
         super(GenreRatingPair.class, true);

@@ -8,8 +8,18 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 import java.util.Iterator;
 
+/**
+ * Reducer definition for MovieSuggestion Job
+ */
 public class MovieSuggestionReducer extends Reducer<GenreRatingPair, MovieSuggestionData, Void, Text> {
 
+    /**
+     * Builds a entry to the output file, given parameters
+     * @param msd MovieSuggestionData instance (some movie)
+     * @param topMovie Best ranked movie
+     * @param mainGenre Associated genre
+     * @return String associating all the input values
+     */
     private Text buildEntry(MovieSuggestionData msd, MovieSuggestionData topMovie, String mainGenre) {
         StringBuilder sb = new StringBuilder();
 
@@ -31,6 +41,14 @@ public class MovieSuggestionReducer extends Reducer<GenreRatingPair, MovieSugges
         return new Text(sb.toString());
     }
 
+    /**
+     * Reducer definition
+     * @param key Contains genre (useful for primary sort) and rating (useful for secondary sort)
+     * @param values Contains data associated with a given movie
+     * @param context Reducer context instance
+     * @throws IOException Associated with write context call
+     * @throws InterruptedException Associated with write context call
+     */
     @Override
     protected void reduce(GenreRatingPair key, Iterable<MovieSuggestionData> values, Context context) throws IOException, InterruptedException {
         Iterator<MovieSuggestionData> iterData = values.iterator();

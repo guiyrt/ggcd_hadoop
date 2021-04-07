@@ -11,7 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Class that handles interactions with schemas
+ */
 public class AvroSchemas {
+
+    /**
+     * Finds a schema of a field in a union, if exists
+     * @param fieldName Field to retrieve
+     * @param union Union to search in
+     * @return Schema of wanted union, or null if not there
+     */
     public static Schema getSchemaFromUnion(String fieldName, Schema union) {
         // Input schema must have type UNION
         if (!union.getType().equals(Schema.Type.UNION)) {
@@ -27,6 +37,14 @@ public class AvroSchemas {
         return null;
     }
 
+    /**
+     * Given a schema and a object with content, converts the object to JSON equivalent structure
+     * @param fieldValue Data that follows the given schema
+     * @param fieldSchema Schema of input data object
+     * @return Converted JsonNode
+     * @throws ClassCastException If schema has type UNION, tries to cast object to all hypothesis until success
+     * @throws NullPointerException If schema has type UNION, tries to cast object to all hypothesis until success
+     */
     public static JsonNode fieldToNode(Object fieldValue, Schema fieldSchema) throws ClassCastException, NullPointerException {
         switch (fieldSchema.getType()) {
             case NULL:
@@ -53,6 +71,7 @@ public class AvroSchemas {
                 return JsonNodeFactory.instance.booleanNode((boolean) fieldValue);
 
             case ARRAY:
+                // Array type is converted to List, so we can suppress the unchecked cast
                 @SuppressWarnings("unchecked")
                 List<Object> array = (List<Object>) fieldValue;
                 Schema itemSchema = fieldSchema.getElementType();
@@ -62,6 +81,7 @@ public class AvroSchemas {
                 return arrayNode;
 
             case MAP:
+                // Map type is converted to Map with String keys, so we can suppress the unchecked cast
                 @SuppressWarnings("unchecked")
                 Map<String, Object> map = (Map<String, Object>) fieldValue;
                 Schema entrySchema = fieldSchema.getValueType();

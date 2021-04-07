@@ -36,7 +36,7 @@ case $1 in
   # Create cluster
   "create")
     argcEq "$#" 1 "Invalid input parameters, create requires no parameters"
-    gcloud dataproc clusters create $CLUSTER_NAME --region $REGION --zone $ZONE --master-machine-type $MASTER_MACHINE_TYPE --master-boot-disk-type $SSD_DISK_TYPE --master-boot-disk-size $DISK_SIZE --num-workers=$WORKERS --num-secondary-workers=$SECONDARY_WORKERS --worker-machine-type $WORKER_MACHINE_TYPE --worker-boot-disk-type $SSD_DISK_TYPE --worker-boot-disk-size $DISK_SIZE --image-version $IMAGE_VERSION --max-idle $MAX_IDLE_SECONDS --scopes $SCOPE --project $PROJECT_NAME
+    gcloud dataproc clusters create $CLUSTER_NAME --region $REGION --zone $ZONE --master-machine-type $MASTER_MACHINE_TYPE --master-boot-disk-type $SSD_DISK_TYPE --master-boot-disk-size $DISK_SIZE --num-workers=$WORKERS --worker-machine-type $WORKER_MACHINE_TYPE --worker-boot-disk-type $SSD_DISK_TYPE --worker-boot-disk-size $DISK_SIZE --num-secondary-workers=$SECONDARY_WORKERS --image-version $IMAGE_VERSION --max-idle $MAX_IDLE_SECONDS --scopes $SCOPE --project $PROJECT_NAME
     ;;
 
   # Stop cluster

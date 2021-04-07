@@ -4,6 +4,7 @@ import Mappers.BasicsRatingsParquetMapper;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -15,14 +16,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Definition of job that converts the imdb text files to parquet
+ */
 public class BasicsRatingsParquet {
+    // These options must be declared in input, otherwise the job exists unsuccessfully
     private static final List<String> requiredOptions = Arrays.asList("input", "output", "ratings", "schemas");
 
+    /**
+     * Job declaration
+     * @param args Input arguments
+     * @throws IOException Associated with file reading
+     * @throws ClassNotFoundException Associated with declaration of used classes in job execution
+     * @throws InterruptedException Associated with waitForCompletion call
+     */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        org.apache.hadoop.mapreduce.Job job = org.apache.hadoop.mapreduce.Job.getInstance(new Configuration(),
+        Job job = Job.getInstance(new Configuration(),
                 "basicsRatingsParquetJob");
-        Map<String, String> options = Common.Job.getInputData(args);
+        Map<String, String> options = Common.Job.getInputOptions(args);
         List<String> missingOptions = Common.Job.missingOptions(options, requiredOptions);
 
         // Must contain required options

@@ -8,6 +8,7 @@ import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.parquet.avro.AvroParquetInputFormat;
 import org.apache.parquet.avro.AvroParquetOutputFormat;
@@ -18,12 +19,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Definition of job that for each year, assigns the total of movies, most voted and top 10 best ranked
+ */
 public class YearMovie {
+    // These options must be declared in input, otherwise the job exists unsuccessfully
     private static final List<String> requiredOptions = Arrays.asList("input", "output", "schemas");
 
+    /**
+     * Job declaration
+     * @param args Input arguments
+     * @throws IOException Associated with file reading
+     * @throws ClassNotFoundException Associated with declaration of used classes in job execution
+     * @throws InterruptedException Associated with waitForCompletion call
+     */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        org.apache.hadoop.mapreduce.Job job =  org.apache.hadoop.mapreduce.Job.getInstance(new Configuration(), "yearMovieJob");
-        Map<String, String> options = Common.Job.getInputData(args);
+        Job job =  Job.getInstance(new Configuration(), "yearMovieJob");
+        Map<String, String> options = Common.Job.getInputOptions(args);
         List<String> missingOptions = Common.Job.missingOptions(options, requiredOptions);
 
         // Must contain required options
