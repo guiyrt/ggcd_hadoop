@@ -43,7 +43,7 @@ public class YearMovieData implements Writable {
     }
 
     /**
-     * Overwrite of write method to write class attributes
+     * Override of write method to write class attributes
      * @param dataOutput DataOutput instance
      * @throws IOException Related with write operations
      */
@@ -56,7 +56,7 @@ public class YearMovieData implements Writable {
     }
 
     /**
-     * Overwrite of write method to read values to class attributes
+     * Override of write method to read values to class attributes
      * @param dataInput DataInput instance
      * @throws IOException Related with read operations
      */

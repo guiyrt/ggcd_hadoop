@@ -63,7 +63,7 @@ public class JsonRecordWriter extends RecordWriter<Text, JsonNode> {
     }
 
     /**
-     * Overwrite of write method, that updates the json ObjectNode
+     * Override of write method, that updates the json ObjectNode
      * @param key Key to update
      * @param value Value to update
      */

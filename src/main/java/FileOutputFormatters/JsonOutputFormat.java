@@ -19,15 +19,24 @@ import java.io.IOException;
  * FileOutputFormat implementation to write to JSON files
  */
 public class JsonOutputFormat extends FileOutputFormat<Text, JsonNode> {
-    private static final String filename = "output";
+    private static final String filename = "part";
     private static final String extension = ".json";
 
     private final ObjectMapper mapper;
 
+    /**
+     * Default empty constructor
+     */
     public JsonOutputFormat() {
         mapper = new ObjectMapper();
     }
 
+    /**
+     * Creates and returns a record writer that outputs to a JSON file
+     * @param job Job context instance
+     * @return JsonRecordWriter in job context
+     * @throws IOException Related to file creation and write operations
+     */
     @Override
     public RecordWriter<Text, JsonNode> getRecordWriter(TaskAttemptContext job) throws IOException {
         Configuration conf = job.getConfiguration();
