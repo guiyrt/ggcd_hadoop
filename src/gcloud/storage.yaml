@@ -34,7 +34,7 @@
       tags:
         - upload
 
-    - name: Action upon storage object
+    - name: Download from storage object
       google.cloud.gcp_storage_object:
         action: download
         bucket: "{{ bucket_name }}"
@@ -46,14 +46,19 @@
       tags:
         - download
 
-    - name: Action upon storage object
-        google.cloud.gcp_storage_object:
-          action: delete
-          bucket: "{{ bucket_name }}"
-          src: "{{ src }}"
-          dest: "{{ dest }}"
-          project: "{{ gcp_project }}"
-          auth_kind: serviceaccount
-          service_account_file: "{{ gcp_auth_file }}"
-        tags:
-          - delete
+    - name: Download folder from bucket
+      command: gsutil cp -r gs://"{{ bucket_name }}"/"{{ src }}" "{{ dest }}"
+      tags:
+        - download-folder
+
+    - name: Delete from storage object
+      google.cloud.gcp_storage_object:
+        action: delete
+        bucket: "{{ bucket_name }}"
+        src: "{{ src }}"
+        dest: "{{ dest }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ gcp_auth_file }}"
+      tags:
+        - delete
