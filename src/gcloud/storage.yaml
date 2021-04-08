@@ -27,7 +27,7 @@
     - name: Delete storage bucket
       command: gsutil rm -r gs://"{{ bucket_name }}"
       tags:
-        - delete
+        - destroy
 
     - name: Upload file to bucket
       command: gsutil cp -r "{{ src }}" gs://"{{ bucket_name }}"/"{{ dest }}"
@@ -36,7 +36,7 @@
 
     - name: Action upon storage object
       google.cloud.gcp_storage_object:
-        action: "{{ gs_action }}"
+        action: download
         bucket: "{{ bucket_name }}"
         src: "{{ src }}"
         dest: "{{ dest }}"
@@ -44,4 +44,16 @@
         auth_kind: serviceaccount
         service_account_file: "{{ gcp_auth_file }}"
       tags:
-        - storage_object
+        - download
+
+    - name: Action upon storage object
+        google.cloud.gcp_storage_object:
+          action: delete
+          bucket: "{{ bucket_name }}"
+          src: "{{ src }}"
+          dest: "{{ dest }}"
+          project: "{{ gcp_project }}"
+          auth_kind: serviceaccount
+          service_account_file: "{{ gcp_auth_file }}"
+        tags:
+          - delete
