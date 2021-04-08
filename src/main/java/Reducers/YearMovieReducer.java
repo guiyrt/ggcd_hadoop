@@ -55,7 +55,7 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
         // Definitions of necessary local variables
         int totalMovies = 0;
         int ratedMovies = 0;
-        int maxVotes = Integer.MIN_VALUE;
+        int maxVotes = 0;
 
         // Iterate trough movies to find total number of movies and the one with more votes
         // Keep in mind that the movies are already in descending order by their ratings
@@ -97,7 +97,7 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
         yearRecord.put("top10RatedMovies", top10movies);
 
         // Add most voted movie, if any
-        yearRecord.put("mostVotedMovie", maxVotes == Integer.MIN_VALUE ? null : mostVotedMovie);
+        yearRecord.put("mostVotedMovie", maxVotes == 0 ? null : mostVotedMovie);
 
         // Year and total movies released in that year
         yearRecord.put("startYear", key.getStartYear().get());

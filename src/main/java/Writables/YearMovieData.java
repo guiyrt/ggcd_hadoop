@@ -8,6 +8,7 @@ import org.apache.hadoop.io.Writable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Definition of class that contains necessary information to describe a movie for the YearMovie Job
@@ -38,8 +39,8 @@ public class YearMovieData implements Writable {
     public YearMovieData(String ttconst, String primaryTitle, Float avgRating, Integer numVotes) {
         this.ttconst = new Text(ttconst);
         this.primaryTitle = new Text(primaryTitle);
-        this.avgRating = avgRating == null ? new FloatWritable(Float.NaN) :new FloatWritable(avgRating);
-        this.numVotes = numVotes == null ? new IntWritable(Integer.MIN_VALUE) : new IntWritable(numVotes);
+        this.avgRating = Objects.isNull(avgRating) ? new FloatWritable(Float.NaN) : new FloatWritable(avgRating);
+        this.numVotes = Objects.isNull(numVotes) ? new IntWritable(0) : new IntWritable(numVotes);
     }
 
     /**

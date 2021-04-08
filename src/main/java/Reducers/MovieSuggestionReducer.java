@@ -24,20 +24,20 @@ public class MovieSuggestionReducer extends Reducer<GenreRatingPair, MovieSugges
         StringBuilder sb = new StringBuilder();
 
         // Write ttconst, primaryTitle and mainGenre
-        sb.append(msd.getTtconst().toString()).append("\t");
-        sb.append(msd.getPrimaryTitle().toString()).append("\t");
-        sb.append(mainGenre).append("\t");
+        sb.append(msd.getTtconst().toString()).append("\t\t");
+        sb.append(msd.getPrimaryTitle().toString()).append("\t\t");
+        sb.append(mainGenre).append("\t\t");
 
         // Top movie cannot be null, and if not null, must be rated
         if (topMovie != null && !Float.isNaN(topMovie.getAvgRating().get())) {
-            sb.append(topMovie.getTtconst().toString()).append("\t");
-            sb.append(topMovie.getPrimaryTitle().toString()).append("\t");
-            sb.append(topMovie.getAvgRating().get()).append("\t");
+            sb.append(topMovie.getTtconst().toString()).append("\t\t");
+            sb.append(topMovie.getPrimaryTitle().toString()).append("\t\t");
+            sb.append(topMovie.getAvgRating().get());
         }
 
         // Keep same formatting as imdb provided databases
         else {
-            sb.append("\\N\t\\N\t\\N\t");
+            sb.append("\\N\t\t\\N\t\t\\N");
         }
 
         return new Text(sb.toString());

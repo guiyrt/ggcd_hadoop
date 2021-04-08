@@ -1,4 +1,4 @@
-message basicsRatings {
+message basicsRatingsProjectionForMovieSuggestion {
     required binary ttconst (STRING);
     required binary titleType (STRING);
     required binary primaryTitle (STRING);
