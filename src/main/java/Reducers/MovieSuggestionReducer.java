@@ -23,14 +23,16 @@ public class MovieSuggestionReducer extends Reducer<GenreRatingPair, MovieSugges
     private Text buildEntry(MovieSuggestionData msd, MovieSuggestionData topMovie, String mainGenre) {
         StringBuilder sb = new StringBuilder();
 
+        // Write ttconst, primaryTitle and mainGenre
         sb.append(msd.getTtconst().toString()).append("\t");
         sb.append(msd.getPrimaryTitle().toString()).append("\t");
         sb.append(mainGenre).append("\t");
 
-        if (topMovie != null) {
+        // Top movie cannot be null, and if not null, must be rated
+        if (topMovie != null && !Float.isNaN(topMovie.getAvgRating().get())) {
             sb.append(topMovie.getTtconst().toString()).append("\t");
             sb.append(topMovie.getPrimaryTitle().toString()).append("\t");
-            sb.append(Float.isNaN(topMovie.getAvgRating().get()) ? "\\N" : topMovie.getAvgRating().get()).append("\t");
+            sb.append(topMovie.getAvgRating().get()).append("\t");
         }
 
         // Keep same formatting as imdb provided databases

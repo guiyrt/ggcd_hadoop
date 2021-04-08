@@ -31,7 +31,7 @@ public class MovieSuggestionMapper extends Mapper<Void, GenericRecord, GenreRati
             Float avgRating = (Float) value.get("avgRating");
 
             // If movie has no associated genres, define main genre as "None"
-            // From knowing the input schema, we are certain that "genre" is a Avro List, go we can suppress the unchecked cast warning
+            // From knowing the input schema, we are certain that "genre" is a Avro List, so we can suppress the unchecked cast warning
             @SuppressWarnings("unchecked")
             String mainGenre = value.get("genres") == null ? "None" : ((List<String>) value.get("genres")).get(0);
 

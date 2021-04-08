@@ -6,15 +6,20 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.hadoop.io.compress.CompressionInputStream;
 import org.apache.parquet.avro.AvroSchemaConverter;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,30 +30,51 @@ public class IO {
     private static final Integer BUFFER_SIZE = 1048576; // 1MB Buffer
 
     /**
-     * Given a file path, returns a String with content
-     * @param filePath Path to file
-     * @return File in String format
-     * @throws IOException Read operations might throw this exception
+     * Given an InputStream, reads the entire file
+     * @param in InputStream instance to read from
+     * @return Content in String format
+     * @throws IOException Related to read operations
      */
-    public static String readFile(String filePath) throws IOException {
-        FSDataInputStream stream = getFileInputStream(filePath);
+    public static String readFromInputStream(InputStream in) throws IOException {
         byte[] buffer = new byte[BUFFER_SIZE];
         StringBuilder dataFile = new StringBuilder();
         int readValue;
 
-        readValue = stream.read(buffer);
+        readValue = in.read(buffer);
         while (readValue != -1) {
             String dataRead = (readValue == BUFFER_SIZE) ?
                     new String(buffer, StandardCharsets.UTF_8) :
                     new String(Arrays.copyOf(buffer, readValue));
             dataFile.append(dataRead);
 
-            readValue = stream.read(buffer);
+            readValue = in.read(buffer);
         }
 
-        stream.close();
+        in.close();
 
         return dataFile.toString();
+    }
+
+    /**
+     * Given a file and a configuration, reads file, even if compressed
+     * @param filePath Path to file
+     * @param conf Configuration instance
+     * @return Content of file, in String format
+     * @throws IOException Related to read operations
+     */
+    public static String readCachedFile(String filePath, Configuration conf) throws IOException {
+        CompressionCodecFactory factory = new CompressionCodecFactory(conf);
+        CompressionCodec codec = factory.getCodec(new Path(filePath));
+        InputStream dataInputStream = getFileInputStream(filePath);
+
+        // In case file is compressed
+        if (Objects.nonNull(codec)) {
+            CompressionInputStream compressionInputStream = codec.createInputStream(dataInputStream);
+            return readFromInputStream(compressionInputStream);
+        }
+
+        // In case file is not compressed or no compatible codec was found
+        return readFromInputStream(dataInputStream);
     }
 
     /**
@@ -58,7 +84,7 @@ public class IO {
      * @throws IOException Read operations might throw this exception
      */
     public static Schema readSchema(String schemaPath) throws IOException {
-        MessageType mt = MessageTypeParser.parseMessageType(readFile(schemaPath));
+        MessageType mt = MessageTypeParser.parseMessageType(readFromInputStream(getFileInputStream(schemaPath)));
         return new AvroSchemaConverter().convert(mt);
     }
 

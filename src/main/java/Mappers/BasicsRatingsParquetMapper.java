@@ -3,6 +3,7 @@ package Mappers;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -56,8 +57,8 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
      * @param ratingsFile Input text file
      * @throws IOException Related with file reading operation
      */
-    private void populateRatings(String ratingsFile) throws IOException {
-        String ratingsData = Common.IO.readFile(ratingsFile);
+    private void populateRatings(String ratingsFile, Configuration conf) throws IOException {
+        String ratingsData = Common.IO.readCachedFile(ratingsFile, conf);
         boolean headerGone = false;
 
         // Get rows
@@ -91,7 +92,7 @@ public class BasicsRatingsParquetMapper extends Mapper<LongWritable, Text, Void,
     protected void setup(Context context) throws IOException {
         List<String> cachedURIs = Arrays.stream(context.getCacheFiles()).map(URI::toString).collect(Collectors.toList());
 
-        populateRatings(cachedURIs.get(0));
+        populateRatings(cachedURIs.get(0), context.getConfiguration());
         schema = Common.IO.readSchema(cachedURIs.get(1));
     }
 
