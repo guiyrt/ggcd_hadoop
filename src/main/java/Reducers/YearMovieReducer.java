@@ -1,10 +1,13 @@
 package Reducers;
 
+import Mappers.YearMovieMapper;
 import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
@@ -77,8 +80,8 @@ public class YearMovieReducer extends Reducer<YearRatingPair, YearMovieData, Voi
             if (movie.getNumVotes().get() > maxVotes) {
                 maxVotes = movie.getNumVotes().get();
 
-                mostVotedMovie.put("ttconst", movie.getTtconst());
-                mostVotedMovie.put("primaryTitle", movie.getPrimaryTitle());
+                mostVotedMovie.put("ttconst", movie.getTtconst().toString());
+                mostVotedMovie.put("primaryTitle", movie.getPrimaryTitle().toString());
                 mostVotedMovie.put("numVotes", movie.getNumVotes().get());
             }
 
