@@ -1,13 +1,10 @@
 package Reducers;
 
-import Mappers.YearMovieMapper;
 import WritableComparable.YearRatingPair;
 import Writables.YearMovieData;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
