@@ -1,5 +1,7 @@
 # TP1 GGCD - Hadoop
 
+Grade: 18.5/20
+
 This repository contains the source files regarding resolution the first practical assigment.
 
 This project handles the IMDB title.basics and title.ratings datasets, to resolve the problems found in assignment.pdf.
